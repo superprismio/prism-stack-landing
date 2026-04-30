@@ -54,7 +54,7 @@ export function Header() {
         <div className="w-full max-w-7xl mx-auto px-4 lg:px-8 flex items-center justify-between h-24">
           {/* Logo */}
           <Link
-            href="/"
+            href="https://superprism.io/"
             className="flex items-center"
             onClick={() => setIsOpen(false)}
           >
