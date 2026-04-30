@@ -54,6 +54,9 @@ export function HeroSection() {
                 View the Repo
               </Link>
             </Button>
+            <Button asChild variant="outline">
+              <Link href="/runbook">Open the Runbook</Link>
+            </Button>
             <Link
               href="#workflow"
               className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors"

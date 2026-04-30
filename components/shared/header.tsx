@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import mobileLogo from "../../public/images/SP_logo.png";
 import { Button } from "../ui/button";
@@ -12,11 +13,21 @@ const menuItems = [
   { label: "Capabilities", href: "#capabilities" },
   { label: "Use Cases", href: "#use-cases" },
   { label: "Workflow", href: "#workflow" },
+  { label: "Runbook", href: "/runbook" },
   { label: "Start", href: "#start" },
 ];
 
 export function Header() {
   const [isOpen, setIsOpen] = useState(false);
+  const pathname = usePathname();
+  const onHomePage = pathname === "/";
+
+  const resolveHref = (href: string) => {
+    if (!href.startsWith("#")) {
+      return href;
+    }
+    return onHomePage ? href : `/${href}`;
+  };
 
   // Close menu when clicking a link
   const handleLinkClick = () => {
@@ -72,7 +83,7 @@ export function Header() {
             {menuItems.map((item) => (
               <Link
                 key={item.href}
-                href={item.href}
+                href={resolveHref(item.href)}
                 className="text-sm font-medium text-foreground relative group transition-colors hover:text-primary"
               >
                 {item.label}
@@ -120,7 +131,7 @@ export function Header() {
               }}
             >
               <Link
-                href={item.href}
+                href={resolveHref(item.href)}
                 className="inline-block py-4 px-5 text-foreground font-medium text-right relative group"
                 onClick={handleLinkClick}
               >

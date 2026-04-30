@@ -1,0 +1,173 @@
+import Link from "next/link";
+import { Header } from "@/components/shared/header";
+import { Footer } from "@/components/shared/footer";
+import { Button } from "@/components/ui/button";
+
+const setupSteps = [
+  {
+    title: "1. Deploy the template",
+    body:
+      "Start from the Railway template. This provisions the site, Prism Memory, Codex runtime, Discord adapter, and scheduled jobs with the current default topology.",
+  },
+  {
+    title: "2. Confirm site initialization",
+    body:
+      "Log into /admin with the template default admin password and verify the board loads. On a healthy first boot, /api/health should report appliedMigrations: 5.",
+  },
+  {
+    title: "3. Configure the Discord bot",
+    body:
+      "In the Discord developer portal, install the bot with bot and applications.commands scopes. Enable Message Content Intent. For voice recording, ensure Connect, Speak, Use Voice Activity, View Channel, Send Messages, Send Messages in Threads, Create Public Threads, and Read Message History.",
+  },
+  {
+    title: "4. Point internal services at private URLs",
+    body:
+      "Use Railway private domains for service-to-service calls. In particular, keep discord-adapter talking to Prism Memory, Codex runtime, and site over internal URLs rather than public edge domains.",
+  },
+  {
+    title: "5. Add a target repository",
+    body:
+      "Create a fine-grained GitHub token with metadata read and contents, issues, and pull requests read/write. The token owner must also have effective write access to the target repository, either directly or through team access.",
+  },
+  {
+    title: "6. Run the first smoke pass",
+    body:
+      "Test admin login, create a change request, verify the bot responds to ping, run /prism-health, and complete one recording flow if you plan to use meeting capture.",
+  },
+];
+
+const envChecks = [
+  "SITE_USE_LOCAL_APP_API=true on site",
+  "PRISM_AGENT_DATA_ROOT=/data on site",
+  "NEXT_PUBLIC_API_BASE_URL points to the site public domain",
+  "APP_API_BASE_URL on codex-runtime and discord-adapter points to site internal URL",
+  "PRISM_API_BASE on discord-adapter points to prism-memory internal URL",
+  "VOICE_DAVE_ENCRYPTION=true unless you have a proven reason to change it",
+];
+
+const smokeChecks = [
+  "Admin login works with the configured password",
+  "The board loads instead of returning admin API errors",
+  "A CR can clone, branch, push, and open a PR against the target repo",
+  "The bot returns pong on ping",
+  "/prism-health reports ready state and current voice permissions",
+  "A recording session produces transcript and summary links in Discord",
+];
+
+export default function RunbookPage() {
+  return (
+    <div className="flex-1 w-full flex flex-col">
+      <Header />
+      <section className="w-full border-b border-border">
+        <div className="max-w-6xl mx-auto px-6 py-20 lg:py-24">
+          <p className="font-mono text-xs uppercase tracking-[0.25em] text-primary mb-4">
+            Deployment Runbook
+          </p>
+          <h1 className="text-4xl lg:text-6xl font-bold max-w-4xl mb-6">
+            Stand up Prism Refactory without guessing through first boot.
+          </h1>
+          <p className="text-lg text-muted-foreground max-w-3xl mb-8">
+            This is the operator path for a fresh Prism Stack deployment:
+            Railway template, site initialization, Discord setup, GitHub access,
+            and the first end-to-end smoke checks.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4">
+            <Button asChild className="holographic-shimmer-hover">
+              <Link
+                href="https://railway.com/deploy/prism-agent-stack"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Deploy on Railway
+              </Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link
+                href="https://github.com/raid-guild/prism-railway-template"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                View the Stack Repo
+              </Link>
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      <section className="w-full border-b border-border">
+        <div className="max-w-6xl mx-auto px-6 py-16 grid gap-6">
+          {setupSteps.map((step) => (
+            <div key={step.title} className="bg-card border border-border p-6 lg:p-8">
+              <h2 className="text-2xl font-semibold mb-3">{step.title}</h2>
+              <p className="text-muted-foreground leading-7">{step.body}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="w-full border-b border-border">
+        <div className="max-w-6xl mx-auto px-6 py-16 grid lg:grid-cols-2 gap-8">
+          <div className="bg-card border border-border p-6 lg:p-8">
+            <p className="font-mono text-xs uppercase tracking-[0.25em] text-primary mb-4">
+              Required Env Checks
+            </p>
+            <ul className="space-y-4 text-muted-foreground">
+              {envChecks.map((item) => (
+                <li key={item} className="border-t border-border pt-4 first:border-t-0 first:pt-0">
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className="bg-card border border-border p-6 lg:p-8">
+            <p className="font-mono text-xs uppercase tracking-[0.25em] text-primary mb-4">
+              First Smoke Checks
+            </p>
+            <ul className="space-y-4 text-muted-foreground">
+              {smokeChecks.map((item) => (
+                <li key={item} className="border-t border-border pt-4 first:border-t-0 first:pt-0">
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section className="w-full">
+        <div className="max-w-6xl mx-auto px-6 py-16">
+          <div className="bg-card border border-border p-6 lg:p-8 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+            <div>
+              <p className="font-mono text-xs uppercase tracking-[0.25em] text-primary mb-3">
+                Next
+              </p>
+              <h2 className="text-2xl font-semibold mb-2">
+                Once the stack is healthy, move into real workflows.
+              </h2>
+              <p className="text-muted-foreground max-w-3xl">
+                Link your target repository, run the first change request, and
+                start using Discord and meeting capture against live community
+                activity rather than a blank template.
+              </p>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-4">
+              <Button asChild variant="outline">
+                <Link href="/">Back to Landing Page</Link>
+              </Button>
+              <Button asChild className="holographic-shimmer-hover">
+                <Link
+                  href="https://railway.com/deploy/prism-agent-stack"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Open the Template
+                </Link>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+      <Footer />
+    </div>
+  );
+}

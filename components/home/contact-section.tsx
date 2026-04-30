@@ -49,6 +49,11 @@ export function ContactSection() {
             </Link>
           </Button>
           <Button asChild variant="outline">
+            <Link href="/runbook">
+              Open the Runbook
+            </Link>
+          </Button>
+          <Button asChild variant="outline">
             <Link href="https://github.com/raid-guild/prism-railway-template" target="_blank" rel="noopener noreferrer">
               View the Stack Repo
             </Link>
