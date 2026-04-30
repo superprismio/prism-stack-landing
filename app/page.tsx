@@ -15,7 +15,7 @@ import { ContactSection } from "@/components/home/contact-section";
 
 export default function Home() {
   return (
-    <div className="flex-1 w-full flex flex-col">
+    <div id="top" className="flex-1 w-full flex flex-col">
       <Header />
       <HeroSection />
       <ProblemSection />
