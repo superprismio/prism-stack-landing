@@ -1,11 +1,15 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import heroImg from "../../public/images/superprism-0.png";
 import { Button } from "@/components/ui/button";
+import { ContactFormModal } from "@/components/shared/contact-form-modal";
 
 export function HeroSection() {
+  const [modalOpen, setModalOpen] = useState(false);
+
   return (
     <section className="w-full">
       <Image
@@ -45,6 +49,13 @@ export function HeroSection() {
                 Deploy on Railway
               </Link>
             </Button>
+            <Button
+              className="holographic-shimmer-hover"
+              variant="secondary"
+              onClick={() => setModalOpen(true)}
+            >
+              Start a Conversation
+            </Button>
             <Button asChild variant="outline">
               <Link
                 href="https://github.com/raid-guild/prism-railway-template"
@@ -54,18 +65,11 @@ export function HeroSection() {
                 View the Repo
               </Link>
             </Button>
-            <Button asChild variant="outline">
-              <Link href="/runbook">Open the Runbook</Link>
-            </Button>
-            <Link
-              href="#workflow"
-              className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors"
-            >
-              See the workflow
-            </Link>
           </div>
         </div>
       </div>
+
+      <ContactFormModal open={modalOpen} onOpenChange={setModalOpen} />
     </section>
   );
 }
