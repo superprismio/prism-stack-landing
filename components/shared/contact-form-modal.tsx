@@ -47,7 +47,7 @@ export function ContactFormModal({ open, onOpenChange }: Props) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           email,
-          source: "contact_form",
+          source: "refactory",
           metadata: { message },
         }),
       });
@@ -67,7 +67,7 @@ export function ContactFormModal({ open, onOpenChange }: Props) {
       setStatusMessage(
         error instanceof Error
           ? error.message
-          : "Something went wrong. Please try again."
+          : "Something went wrong. Please try again.",
       );
     } finally {
       setIsSubmitting(false);
