@@ -51,13 +51,7 @@ export function ContactSection() {
         </div>
         <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center">
           <Button className="holographic-shimmer-hover" asChild>
-            <Link
-              href="https://railway.com/deploy/prism-agent-stack"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Deploy on Railway
-            </Link>
+            <Link href="/runbook">Get Started</Link>
           </Button>
           <Button
             className="holographic-shimmer-hover"

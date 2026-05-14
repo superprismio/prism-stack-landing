@@ -41,13 +41,7 @@ export function HeroSection() {
           </p>
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mt-3">
             <Button asChild className="holographic-shimmer-hover">
-              <Link
-                href="https://railway.com/deploy/prism-agent-stack"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Deploy on Railway
-              </Link>
+              <Link href="/runbook">Get Started</Link>
             </Button>
             <Button
               className="holographic-shimmer-hover"
@@ -55,15 +49,6 @@ export function HeroSection() {
               onClick={() => setModalOpen(true)}
             >
               Start a Conversation
-            </Button>
-            <Button asChild variant="outline">
-              <Link
-                href="https://github.com/raid-guild/prism-railway-template"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                View the Repo
-              </Link>
             </Button>
           </div>
         </div>
