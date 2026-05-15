@@ -8,69 +8,60 @@ const setupSteps = [
     number: "1",
     title: "Deploy the template",
     how: [
-      "Open https://railway.com/deploy/prism-agent-stack and sign in to the Railway workspace where you want the stack to live.",
-      "Click Deploy. Railway will create the site, Prism Memory, Codex runtime, Discord adapter, and scheduled jobs for you.",
-      "Configure variables now if you already have them. The Discord adapter needs bot and channel details, and Codex runtime needs a GitHub token.",
-      "You can leave optional values blank during first deploy and return to each service's Variables tab later.",
-      "Click the final Deploy button on Railway to create the project.",
+      "Deploy https://railway.com/deploy/prism-agent-stack into the target Railway workspace.",
+      "Provide required variables during deploy or defer optional service values until after first boot.",
+      "Discord requires application, bot, guild, and channel values. Codex runtime requires a GitHub token.",
     ],
     expect:
-      "Railway should create a new project with all Prism Stack services visible in the project canvas.",
+      "Railway creates the site, Prism Memory, Codex runtime, Discord adapter, and scheduled services.",
     confirm:
-      "Open the Railway project and confirm the site, prism-memory, codex-runtime, discord-adapter, and scheduled services exist.",
+      "Project canvas includes site, prism-memory, codex-runtime, discord-adapter, and scheduled services.",
   },
   {
     number: "2",
     title: "Confirm site initialization",
     how: [
-      "Open the site service in Railway.",
-      "Find the public URL in the Settings tab.",
-      "Find the temporary admin password in the Variables tab under ADMIN_PASSWORD.",
-      "Visit the site URL, open the admin view, and log in with that password.",
+      "Use the site service public URL and ADMIN_PASSWORD from Railway variables.",
+      "Authenticate to the admin view and let first-boot migrations complete.",
     ],
     expect:
-      "The admin view should load without manual database work or local setup.",
+      "Admin loads without manual database setup.",
     confirm:
-      "The board should render, and the health endpoint should report the expected first-boot migrations.",
+      "Board renders and health reports the expected migration state.",
   },
   {
     number: "3",
     title: "Configure the Discord bot integration",
     eyebrow: "Optional",
     how: [
-      "Create or open a Discord application at https://discord.com/developers.",
-      "Copy the Application ID from the General Information page.",
-      "Open the Bot page, create a bot if needed, copy the token, and enable the Message Content Intent toggle.",
-      "Open the Installation page and update Default Install Settings so the app can be installed with the bot and applications.commands scopes.",
-      "Use the generated invite link to add the bot to your server. You will need permission to add apps to that server.",
-      "In Railway, open the discord-adapter service and add the Discord application, bot, server, and channel values in the Variables tab.",
+      "Create or reuse a Discord application at https://discord.com/developers.",
+      "Enable the bot with Message Content Intent and install it with bot plus applications.commands scopes.",
+      "Set the Discord application, bot, guild, and channel variables on discord-adapter.",
     ],
     expect:
-      "The bot should appear in your Discord server and have access to the channels you configured.",
+      "The bot is present in the target guild with access to configured channels.",
     confirm:
-      "Send PING in the configured channel. The bot should respond with pong.",
+      "PING returns pong in the configured channel.",
   },
   {
     number: "4",
     title: "Configure your GitHub integration",
     how: [
-      "Create a GitHub personal access token for the account Prism should use when cloning, branching, pushing, and opening pull requests. GitHub's guide lives at https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens.",
-      "Use a fine-grained token when possible. Give it access to the target repository and the metadata, contents, issues, and pull requests permissions Prism needs.",
-      "In Railway, open the codex-runtime service and add the token in the Variables tab as TARGET_REPO_GITHUB_TOKEN.",
-      "Open the Refactory site admin settings and add your first target repository.",
+      "Create a fine-grained GitHub PAT for the Prism runtime account.",
+      "Grant target repo access plus metadata, contents, issues, and pull requests permissions.",
+      "Set TARGET_REPO_GITHUB_TOKEN on codex-runtime and register the first target repo in admin settings.",
     ],
     expect:
-      "Codex runtime should be able to authenticate to GitHub and the site should know which repository to operate on first.",
+      "Codex runtime can authenticate to GitHub and the site has an initial repo target.",
     confirm:
-      "Save the repository in the site settings and verify it appears as an available target for new change requests.",
+      "The repository appears as an available target for new change requests.",
   },
   {
     number: "5",
     title: "Configure your Codex runtime",
     how: [
-      "Make sure you have a Codex account ready before logging into the runtime.",
-      "Install and authenticate the Railway CLI locally if you have not already.",
-      "SSH into the codex-runtime service and run the Codex device login from persistent storage.",
+      "Authenticate Railway CLI locally.",
+      "SSH into codex-runtime and run Codex device auth with CODEX_HOME on persistent storage.",
     ],
     code: `railway ssh -s codex-runtime
 mkdir -p /data/codex
@@ -78,24 +69,23 @@ export CODEX_HOME=/data/codex
 export PATH="/app/node_modules/.bin:$PATH"
 codex login --device-auth`,
     expect:
-      "The device login should complete in your browser, and Codex credentials should be stored under /data/codex so they survive service restarts.",
+      "Device auth stores Codex credentials under /data/codex so restarts do not require re-login.",
     confirm:
-      "Reconnect with railway ssh -s codex-runtime, export CODEX_HOME=/data/codex, and run codex status to confirm the runtime is authenticated.",
+      "Reconnect, export CODEX_HOME=/data/codex, and run codex status.",
   },
   {
     number: "6",
     title: "Run the first smoke pass",
     how: [
-      "Log into the admin view and confirm the board loads.",
-      "Create a small change request against the target repository. Use a harmless docs or text change for the first pass.",
-      "Watch the job move through clone, branch, edit, push, and pull request creation.",
-      "In Discord, send PING and run /prism-health if slash commands are enabled.",
-      "If you plan to use meeting capture, complete one short recording flow in a test voice channel.",
+      "Create a low-risk change request against the target repo.",
+      "Verify clone, branch, edit, push, and pull request creation.",
+      "Run PING and /prism-health in Discord if enabled.",
+      "Exercise one test recording flow if meeting capture is enabled.",
     ],
     expect:
-      "The stack should prove that the site, runtime, GitHub token, Discord adapter, and optional recording flow are wired together.",
+      "Site, runtime, GitHub token, Discord adapter, and optional recording flow prove end-to-end wiring.",
     confirm:
-      "You should have a created pull request, a responsive Discord bot, a healthy /prism-health result, and transcript or summary links if recording is enabled.",
+      "Pull request exists, bot responds, /prism-health is ready, and recording outputs links when enabled.",
   },
 ];
 
@@ -130,9 +120,9 @@ export default function RunbookPage() {
             Stand up Prism Refactory without guessing through first boot.
           </h1>
           <p className="text-lg text-muted-foreground max-w-3xl mb-8">
-            This is the operator path for a fresh Prism Stack deployment:
-            Railway template, site initialization, Discord setup, GitHub access,
-            and the first end-to-end smoke checks.
+            Operator path for a fresh Prism Stack deployment: Railway template,
+            site initialization, Discord setup, GitHub access, and first smoke
+            checks.
           </p>
           <div className="flex flex-col sm:flex-row gap-4">
             <Button asChild className="holographic-shimmer-hover">
@@ -180,7 +170,7 @@ export default function RunbookPage() {
               <div className="grid gap-6 lg:grid-cols-[1.4fr_1fr]">
                 <div>
                   <h3 className="font-mono text-xs uppercase tracking-[0.25em] text-primary mb-3">
-                    How
+                    Actions
                   </h3>
                   <ul className="space-y-3 text-muted-foreground leading-7">
                     {step.how.map((item) => (
@@ -198,7 +188,7 @@ export default function RunbookPage() {
                 <div className="grid gap-5 content-start">
                   <div>
                     <h3 className="font-mono text-xs uppercase tracking-[0.25em] text-primary mb-3">
-                      What to expect
+                      Expected State
                     </h3>
                     <p className="text-muted-foreground leading-7">
                       {step.expect}
@@ -206,7 +196,7 @@ export default function RunbookPage() {
                   </div>
                   <div>
                     <h3 className="font-mono text-xs uppercase tracking-[0.25em] text-primary mb-3">
-                      How to confirm
+                      Validation
                     </h3>
                     <p className="text-muted-foreground leading-7">
                       {step.confirm}
@@ -259,9 +249,8 @@ export default function RunbookPage() {
                 Once the stack is healthy, move into real workflows.
               </h2>
               <p className="text-muted-foreground max-w-3xl">
-                Link your target repository, run the first change request, and
-                start using Discord and meeting capture against live community
-                activity rather than a blank template.
+                Add production repositories, run real change requests, and move
+                Discord plus meeting capture out of the test channels.
               </p>
             </div>
             <div className="flex flex-col sm:flex-row gap-4">
