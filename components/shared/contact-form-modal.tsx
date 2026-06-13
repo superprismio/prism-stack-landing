@@ -13,6 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { useSubmitEarlyAccess } from "@/hooks/use-submit-early-access";
 
 type SubmissionState = "idle" | "success" | "error";
 
@@ -26,7 +27,8 @@ export function ContactFormModal({ open, onOpenChange }: Props) {
   const [message, setMessage] = useState("");
   const [status, setStatus] = useState<SubmissionState>("idle");
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const submitEarlyAccess = useSubmitEarlyAccess();
+  const isSubmitting = submitEarlyAccess.isPending;
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -37,26 +39,18 @@ export function ContactFormModal({ open, onOpenChange }: Props) {
       return;
     }
 
-    setIsSubmitting(true);
     setStatus("idle");
     setStatusMessage(null);
 
     try {
-      const response = await fetch("/api/early-access", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email,
-          source: "refactory",
-          metadata: { message },
-        }),
+      await submitEarlyAccess.mutateAsync({
+        email,
+        source: "contact_form",
+        message,
+        metadata: {
+          location: "contact_modal",
+        },
       });
-
-      const payload = await response.json().catch(() => ({}));
-
-      if (!response.ok) {
-        throw new Error(payload?.error ?? "Unable to send your message.");
-      }
 
       setStatus("success");
       setStatusMessage("Thanks! We'll be in touch soon.");
@@ -69,8 +63,6 @@ export function ContactFormModal({ open, onOpenChange }: Props) {
           ? error.message
           : "Something went wrong. Please try again.",
       );
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
