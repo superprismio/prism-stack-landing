@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Space_Grotesk, Space_Mono } from "next/font/google";
-import { ThemeProvider } from "next-themes";
+import { Providers } from "@/app/providers";
 import "./globals.css";
 
 const defaultUrl = process.env.APP_URL
@@ -37,16 +37,11 @@ export default function RootLayout({
       <body
         className={`${spaceGrotesk.variable} ${spaceMono.variable} antialiased dark`}
       >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="dark"
-          enableSystem
-          disableTransitionOnChange
-        >
+        <Providers>
           <main className="min-h-screen flex flex-col items-center">
             {children}
           </main>
-        </ThemeProvider>
+        </Providers>
       </body>
     </html>
   );
