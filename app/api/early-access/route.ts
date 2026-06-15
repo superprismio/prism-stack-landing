@@ -4,6 +4,11 @@ export const runtime = "nodejs";
 
 const DISCORD_MESSAGE_LIMIT = 2000;
 const CONTACT_SOURCE = "prism-refactory";
+const CONTACT_FORM_MIN_ELAPSED_MS = 3000;
+const SUCCESS_RESPONSE = {
+  ok: true,
+  message: "Your message was sent.",
+};
 const emailPattern =
   /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/i;
 
@@ -11,6 +16,8 @@ type EarlyAccessPayload = {
   email?: unknown;
   source?: unknown;
   message?: unknown;
+  website?: unknown;
+  formStarted?: unknown;
   metadata?: unknown;
 };
 
@@ -45,6 +52,31 @@ function getMetadata(metadata: unknown) {
   }
 
   return metadata as Record<string, unknown>;
+}
+
+function getString(value: unknown) {
+  return typeof value === "string" ? value.trim() : "";
+}
+
+function getTimestamp(value: unknown) {
+  const timestamp =
+    typeof value === "number"
+      ? value
+      : typeof value === "string"
+        ? Number(value)
+        : NaN;
+
+  return Number.isFinite(timestamp) ? timestamp : null;
+}
+
+function isFastContactSubmission(source: string, formStarted: unknown) {
+  if (source !== "contact_form") return false;
+
+  const timestamp = getTimestamp(formStarted);
+
+  if (timestamp === null) return false;
+
+  return Date.now() - timestamp < CONTACT_FORM_MIN_ELAPSED_MS;
 }
 
 function formatLabel(value: string) {
@@ -138,6 +170,11 @@ export async function POST(request: Request) {
     typeof body.source === "string" && body.source.trim().length > 0
       ? body.source.trim()
       : "early_access";
+  const website = getString(body.website);
+
+  if (website || isFastContactSubmission(source, body.formStarted)) {
+    return NextResponse.json(SUCCESS_RESPONSE);
+  }
 
   if (!emailPattern.test(email)) {
     return NextResponse.json(
@@ -168,10 +205,7 @@ export async function POST(request: Request) {
 
     await sendDiscordMessage(formatDiscordMessage(summary));
 
-    return NextResponse.json({
-      ok: true,
-      message: "Your message was sent.",
-    });
+    return NextResponse.json(SUCCESS_RESPONSE);
   } catch (error) {
     console.error("Error submitting early access request:", error);
 

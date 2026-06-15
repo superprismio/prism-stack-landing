@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -25,10 +25,23 @@ type Props = {
 export function ContactFormModal({ open, onOpenChange }: Props) {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
+  const [website, setWebsite] = useState("");
+  const [formStarted, setFormStarted] = useState<number | null>(null);
   const [status, setStatus] = useState<SubmissionState>("idle");
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const submitEarlyAccess = useSubmitEarlyAccess();
   const isSubmitting = submitEarlyAccess.isPending;
+
+  useEffect(() => {
+    if (!open) return;
+
+    const timeout = window.setTimeout(() => {
+      setWebsite("");
+      setFormStarted(Date.now());
+    }, 0);
+
+    return () => window.clearTimeout(timeout);
+  }, [open]);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -47,6 +60,8 @@ export function ContactFormModal({ open, onOpenChange }: Props) {
         email,
         source: "contact_form",
         message,
+        website,
+        formStarted: formStarted ?? Date.now(),
         metadata: {
           location: "contact_modal",
         },
@@ -56,6 +71,8 @@ export function ContactFormModal({ open, onOpenChange }: Props) {
       setStatusMessage("Thanks! We'll be in touch soon.");
       setEmail("");
       setMessage("");
+      setWebsite("");
+      setFormStarted(Date.now());
     } catch (error) {
       setStatus("error");
       setStatusMessage(
@@ -77,6 +94,23 @@ export function ContactFormModal({ open, onOpenChange }: Props) {
           <p className="mt-2 text-xl text-primary">{statusMessage}</p>
         ) : (
           <form onSubmit={handleSubmit} className="mt-2 flex flex-col gap-4">
+            <Input
+              type="text"
+              name="website"
+              value={website}
+              onChange={(event) => setWebsite(event.target.value)}
+              tabIndex={-1}
+              autoComplete="off"
+              aria-hidden="true"
+              className="hidden"
+              disabled={isSubmitting}
+            />
+            <input
+              type="hidden"
+              name="formStarted"
+              value={formStarted ?? ""}
+            />
+
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="contact-email">Email address</Label>
               <Input
