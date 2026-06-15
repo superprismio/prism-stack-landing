@@ -136,7 +136,7 @@ export default function RunbookPage() {
             </Button>
             <Button asChild variant="outline">
               <Link
-                href="https://github.com/raid-guild/prism-railway-template"
+                href="https://github.com/superprismio/prism-railway-template"
                 target="_blank"
                 rel="noopener noreferrer"
               >
