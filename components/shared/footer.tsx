@@ -18,7 +18,7 @@ export function Footer() {
         />
       </div>
       <Link
-        href="https://github.com/raid-guild/prism-railway-template"
+        href="https://github.com/superprismio/prism-railway-template"
         target="_blank"
         rel="noopener noreferrer"
         className="text-sm hover:text-primary transition-colors"
