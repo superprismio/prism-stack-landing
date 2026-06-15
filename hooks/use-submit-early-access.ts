@@ -6,6 +6,8 @@ type SubmitEarlyAccessInput = {
   email: string;
   source?: string;
   message?: string;
+  website?: string;
+  formStarted?: number;
   metadata?: Record<string, unknown>;
 };
 
