@@ -1,5 +1,7 @@
 import Image from "next/image";
+import Link from "next/link";
 import landscapeImg from "../../public/images/prism_landscape.jpg";
+import { Button } from "../ui/button";
 
 const signals = [
   {
@@ -46,6 +48,11 @@ export function AppliedResearchSection() {
             operator control should be treated as infrastructure for
             communities, not as afterthoughts around a chatbot interface.
           </p>
+          <Button asChild variant="outline" className="mt-8">
+            <Link href="/research/building-the-ai-enabled-guild">
+              Read the Raid Guild article
+            </Link>
+          </Button>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-12">
           {signals.map((signal) => (
