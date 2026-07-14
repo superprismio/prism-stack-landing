@@ -13,6 +13,7 @@ const menuItems = [
   { label: "Capabilities", href: "#capabilities" },
   { label: "Use Cases", href: "#use-cases" },
   { label: "Workflow", href: "#workflow" },
+  { label: "Research", href: "/research/building-the-ai-enabled-guild" },
   { label: "Runbook", href: "/runbook" },
   { label: "Start", href: "#start" },
 ];
@@ -79,7 +80,7 @@ export function Header() {
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center gap-8">
+          <div className="hidden lg:flex items-center gap-6 xl:gap-8">
             {menuItems.map((item) => (
               <Link
                 key={item.href}
